@@ -100,7 +100,7 @@ senha.addEventListener('focusout', () =>{
 
     const senhaTrimado = senha.value.trim();
     var strength;
-    console.log(senha.value);
+    /*console.log(senha.value);*/
 
     if(!senhaValida(senhaTrimado)){
         senhaHelp.textContent = `Senha invalida`;
