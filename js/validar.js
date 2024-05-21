@@ -1,161 +1,118 @@
-//criando os objetos dos elementos de texto do form
-
+// Criando os objetos dos elementos de texto do form
 var nome = document.querySelector("#inputName");
 var nomeHelp = document.querySelector("#inputNameHelp");
 var ano = document.querySelector("#inputYear");
 var anoHelp = document.querySelector("#inputYearHelp");
 var email = document.querySelector("#inputEmail");
 var emailHelp = document.querySelector("#inputEmailHelp");
-
 var senha = document.querySelector("#inputPassword");
 var senhaHelp = document.querySelector("#inputPasswordHelp");
 var resultadoSenha = document.querySelector("#inputResult");
 var meter = document.querySelector("#passStrengthMeter");
+var form = document.querySelector("#singleForm");
+var inputResult = document.querySelector("#inputResult");
 
-
-/*declarando o evento listener para o campos de texto do form. 
-Uma vez o foco do campo inputName mude, será chamada a função validarNome*/
+// Declarando os eventos listeners para os campos de texto do form
 nome.addEventListener('focusout', validarNome);
+ano.addEventListener('focusout', validarAno);
+email.addEventListener('focusout', validarEmail);
+senha.addEventListener('focusout', validarSenha);
 
-/*declaração tradicional de função validarNome(e)
-'e' é o objeto do tipo evento que contém, alpem de outras propriedades, o objeto que iniciou o evento,
-neste caso o objeto 'nome'
-*/
-
-function validarNome(e){ 
-    //declaração da expressão regular para definir o formato de um nome válido
+// Função para validar o nome
+function validarNome(e) { 
     const regexNome = /^[A-Z][a-z]+$/;
-    
-    console.log(e); //impressão em console do objeto evento e
-    console.log(e.target.value); //impressão em console do valor do objeto 'nome' que originou o evento   
-
-    if(e.target.value.trim().match(regexNome)==null || e.target.value.length < 6){
-        //muda o conteúdo e o estilo do objeto nomeHelp que referencia o elemento html com id=inputNameHelp
-        nomeHelp.textContent = "Formato de nome inválido"; 
-        nomeHelp.style.color="red";
-    }
-    else{
+    if (e.target.value.trim().match(regexNome) == null || e.target.value.length < 6) {
+        nomeHelp.textContent = "Nome inválido";
+        nomeHelp.style.color = "red";
+        return false;
+    } else {
         nomeHelp.textContent = "";
+        return true;
     }       
 }
 
-/*declarando o evento listener para o campos de texto do form. 
-Uma vez o foco seja mudado, será chamada a função validarNome*/
-
-//declaração de função de forma anônima usando uma expressão de função de seta =>
-
-ano.addEventListener('focusout', () => {
-    //declaração da expressão regular para definir o formato de um ano válido
+// Função para validar o ano
+function validarAno() {
     const regexAno = /^[0-9]{4}$/;
-    //tirar (trim) espaços em branco antes e depois da string
     const anoTrimado = ano.value.trim();
-    console.log(ano.value);
-
-    if(anoTrimado.match(regexAno)==null){
-        //muda o conteúdo e o estilo do objeto nomeHelp que referencia o elemento html com id=inputYearHelp
-        anoHelp.textContent = "Formato de ano inválido";
-        anoHelp.style.color="red";
-    }
-    else{
-        //objeto Date
+    if (anoTrimado.match(regexAno) == null) {
+        anoHelp.textContent = "Ano inválido";
+        anoHelp.style.color = "red";
+        return false;
+    } else {
         var date = new Date();
-        //obtem o ano atual
-        console.log(date.getFullYear()); 
-        
-        if( parseInt(anoTrimado) > parseInt(date.getFullYear())){
-             //muda o conteúdo e o estilo do objeto nomeHelp que referencia o elemento html com id=inputYearHelp
-            anoHelp.textContent = `Ano inválido. O ano não pode ser maior que ${date.getFullYear()}.`;
-            anoHelp.style.color="red";
+        if (parseInt(anoTrimado) > date.getFullYear() || parseInt(anoTrimado) < date.getFullYear() - 120) {
+            anoHelp.textContent = `Ano inválido`;
+            anoHelp.style.color = "red";
+            return false;
+        } else {
+            anoHelp.textContent = "";
+            return true;
         }
-        else if( parseInt(anoTrimado) < parseInt(date.getFullYear())- 120 ){
-             //muda o conteúdo e o estilo do objeto nomeHelp que referencia o elemento html com id=inputYearHelp
-            anoHelp.textContent = `Ano inválido. O ano não pode ser menor que ${date.getFullYear()-120}.`;
-            anoHelp.style.color="red";
-        }
-        else{
-            anoHelp.textContent="";
-        }        
-        
     }
 }
-);
 
-email.addEventListener('focusout', () =>{
-
+// Função para validar o email
+function validarEmail() {
     const regexEmail = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.(br|com|net|org)$/;
     const emailTrimado = email.value.trim();
-    console.log(email.value);
-
-    if(emailTrimado.match(regexEmail)==null){
-        emailHelp.textContent = `Formato de email inválido.`;
-        emailHelp.style.color="red"
-    }
-    else{
-        emailHelp.textContent="";
+    if (emailTrimado.match(regexEmail) == null) {
+        emailHelp.textContent = `Formato de email inválido`;
+        emailHelp.style.color = "red";
+        return false;
+    } else {
+        emailHelp.textContent = "";
+        return true;
     }
 }
-);
 
-senha.addEventListener('focusout', () =>{
-
+// Função para validar a senha
+function validarSenha() {
     const senhaTrimado = senha.value.trim();
-    var strength;
-    /*console.log(senha.value);*/
-
-    if(!senhaValida(senhaTrimado)){
-        senhaHelp.textContent = `Senha invalida`;
-        senhaHelp.style.color="red";
+    if (!senhaValida(senhaTrimado)) {
+        senhaHelp.textContent = `Senha inválida`;
+        senhaHelp.style.color = "red";
         meter.value = 0;
-    }else{
-        senhaHelp.textContent="";
-        strength = calcularForcaSenha(senhaTrimado);
+        resultadoSenha.textContent = "";
+        return false;
+    } else {
+        var strength = calcularForcaSenha(senhaTrimado);
         meter.value = strength;
-        console.log(strength);
         if (strength < 11) {
-            resultadoSenha.textContent = "Fraca";
+            senhaHelp.textContent = "Fraca";
         } else if (strength < 21) {
-            resultadoSenha.textContent = "Moderada";
+            senhaHelp.textContent = "Moderada";
         } else {
-            resultadoSenha.textContent = "Forte";
+            senhaHelp.textContent = "Forte";
         }
+        return true;
     }
 }
-);
 
-function senhaValida(senha){
-    const regexSenha =/^[A-Za-z\d@#%&!+]{6,20}$/;
+// Função para verificar a validade da senha
+function senhaValida(senha) {
+    const regexSenha = /^[A-Za-z\d@#%&!+]{6,20}$/;
     const regexSenha2 = /^(?=.*[@#%&!+]).*$/;
     const regexSenha3 = /^(?=.*\d).*$/;
     const regexSenha4 = /^(?=.*[a-zA-Z]).*$/;
     nomeCompleto = nome.value.trim();
     const primerNome = nomeCompleto.split(' ')[0].toLowerCase();
-    
-    if(senha.match(regexSenha)==null){
+
+    if (senha.match(regexSenha) == null ||
+        senha.match(regexSenha2) == null ||
+        senha.match(regexSenha3) == null ||
+        senha.match(regexSenha4) == null ||
+        senha.toLowerCase().includes(primerNome) ||
+        senha.includes(ano.value.trim())) {
         return false;
-    }else{
-        if(senha.match(regexSenha2)==null){
-            return false;
-        }else{
-            if(senha.match(regexSenha3)==null){
-                return false;
-            }else{
-                if(senha.match(regexSenha4)==null){
-                    return false;
-                }else{
-                    if(senha.toLowerCase().includes(primerNome) || senha.includes(ano.value.trim())){
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-            }
-        }
+    } else {
+        return true;
     }
 }
 
+// Função para calcular a força da senha
 function calcularForcaSenha(senha) {
     let strength = 0;
-
     if (senha.match(/^(?=.*[@#%&!+]).*$/)) 
         strength += 5;
     if (senha.match(/^(?=.*\d).*$/)) 
@@ -164,6 +121,29 @@ function calcularForcaSenha(senha) {
         strength += 5;
     if (senha.length > 12 && senha.match(/^(?=.*[@$!%*?&].*[@$!%*?&]).*$/) && senha.match(/^(?=.*\d.*\d).*$/) && senha.match(/^(?=.*[A-Z].*[A-Z]).*$/)) 
         strength += 15;
-
     return strength;
 }
+
+// Função para verificar todos os campos e exibir a mensagem apropriada
+function verificarCampos(e) {
+    e.preventDefault();
+    const nomeValido = validarNome({ target: nome });
+    const anoValido = validarAno();
+    const emailValido = validarEmail();
+    const senhaValida = validarSenha();
+
+    let mensagem = "";
+    if (nomeValido && anoValido && emailValido && senhaValida) {
+        mensagem = "Seus dados foram registrados.";
+        inputResult.style.color = "green";
+    } else {
+        mensagem = "Seus dados não foram registrados.";
+        inputResult.style.color = "red";
+    }
+    
+    // Adiciona a mensagem de registro ao final do resultado da senha
+    inputResult.textContent = mensagem;
+}
+
+// Adicionando o evento listener ao formulário para verificar os campos no submit
+form.addEventListener('submit', verificarCampos);
